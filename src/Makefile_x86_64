@@ -1,0 +1,24 @@
+CXXFLAGS := -I/usr/include/mysql -I/usr/local/include/mysql++
+LDFLAGS := -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu
+LDLIBS := -lmysqlpp -lmysqlclient
+EXECUTABLE := stacksToVCF
+
+all: $(EXECUTABLE)
+
+stacksToVCF: stacksToVCF.o stacksDB.o SNP.o biopRefAllele.o
+	g++ stacksToVCF.o stacksDB.o SNP.o biopRefAllele.o -o $(EXECUTABLE) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
+
+stacksToVCF.o: stacksToVCF.cpp
+	g++ -c stacksToVCF.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
+
+biopRefAllele.o: biopRefAllele.cpp
+	g++ -c biopRefAllele.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
+
+stacksDB.o: stacksDB.cpp
+	g++ -c stacksDB.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
+
+SNP.o: SNP.cpp
+	g++ -c SNP.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
+
+clean:
+	rm -rf *o $(EXECUTABLE)

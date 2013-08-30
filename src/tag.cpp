@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  sample.h
+ *       Filename:  tag.cpp
  *
  *    Description:  
  *
  *        Version:  1.0
- *        Created:  13-08-29 01:17:32 PM
+ *        Created:  13-08-29 02:55:23 PM
  *       Revision:  none
  *       Compiler:  g++
  *
@@ -15,22 +15,13 @@
  *
  * =====================================================================================
  */
+#include <stdlib.h>
+#include <string>
+#include "tag.h"
 
-#ifndef  SAMPLE_H_INC
-#define  SAMPLE_H_INC
-
-class Sample {
-	public:
-		//Constructors
-		Sample();
-		//Destructors
-		//~Sample();
-	private:
-		int avgDepth;
-		int id;
-		std::string name;
-		std::string flag;
-};
-
-#endif   /* ----- #ifndef SAMPLE_H_INC  ----- */
-
+//Constructors
+Tag::Tag()
+{
+	coordinate = avgDepth = id = 0;
+	strand = "null";
+}

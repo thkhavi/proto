@@ -1,36 +1,34 @@
 /*
  * =====================================================================================
  *
- *       Filename:  sample.h
+ *       Filename:  tag.h
  *
  *    Description:  
  *
  *        Version:  1.0
- *        Created:  13-08-29 01:17:32 PM
+ *        Created:  13-08-29 02:55:18 PM
  *       Revision:  none
  *       Compiler:  g++
  *
  *         Author:  Ryan F. McCormick, Sandra K. Truong
- *   Organization:  Texas A&M University
+ *   Organization: Texas A&M University 
  *
  * =====================================================================================
  */
 
-#ifndef  SAMPLE_H_INC
-#define  SAMPLE_H_INC
+#ifndef  TAG_H_INC
+#define  TAG_H_INC
 
-class Sample {
+class Tag {
 	public:
 		//Constructors
-		Sample();
+		Tag();
 		//Destructors
-		//~Sample();
+		//~Tag();
 	private:
+		int coordinate;
 		int avgDepth;
 		int id;
-		std::string name;
-		std::string flag;
+		std::string strand;
 };
-
-#endif   /* ----- #ifndef SAMPLE_H_INC  ----- */
-
+#endif   /* ----- #ifndef TAG_H_INC  ----- */

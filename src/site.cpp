@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  sample.h
+ *       Filename:  site.cpp
  *
  *    Description:  
  *
  *        Version:  1.0
- *        Created:  13-08-29 01:17:32 PM
+ *        Created:  13-08-29 02:55:36 PM
  *       Revision:  none
  *       Compiler:  g++
  *
@@ -15,22 +15,15 @@
  *
  * =====================================================================================
  */
+#include <stdlib.h>
+#include <utility>
+#include <string>
+#include "tag.h"
+#include "site.h"
 
-#ifndef  SAMPLE_H_INC
-#define  SAMPLE_H_INC
-
-class Sample {
-	public:
-		//Constructors
-		Sample();
-		//Destructors
-		//~Sample();
-	private:
-		int avgDepth;
-		int id;
-		std::string name;
-		std::string flag;
-};
-
-#endif   /* ----- #ifndef SAMPLE_H_INC  ----- */
-
+//Constructors
+Site::Site(Tag rev_tag, Tag fwd_tag)
+{
+	site.first = rev_tag;
+	site.second = fwd_tag;
+}

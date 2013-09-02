@@ -19,12 +19,18 @@
 #ifndef  SAMPLE_H_INC
 #define  SAMPLE_H_INC
 
+#include  <mysql++.h>
+
 class Sample {
 	public:
 		//Constructors
 		Sample();
 		//Destructors
 		//~Sample();
+		void printSample();
+		void setName(mysqlpp::String Str_name);
+		void setID(int i_id);
+		void setAvgDepth(int i_avgdepth);
 	private:
 		int avgDepth;
 		int id;

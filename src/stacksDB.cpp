@@ -61,33 +61,3 @@ void getSamples(const char *pcc_db, const char *pcc_server,
 		}
 	}
 }
-//Old code for an example:
-		/* 
-		// Retrieve high quality tags
-		mysqlpp::Query query = conn.query("SELECT tag_id \
-				FROM catalog_index \
-				WHERE geno_cnt>=%0:thresh AND parents=2 AND snps<=5 AND \
-				marker=\'aa/bb\'");
-		query.parse();
-		//Store the tags
-		std::vector<int> vi_tags;
-		if (mysqlpp::StoreQueryResult res = query.store(indThresh)) {
-			for (size_t i = 0; i < res.num_rows(); ++i) {
-				vi_tags.push_back(res[i]["tag_id"]);
-				//std::cerr << res[i]["tag_id"] << std::endl;
-			}
-			std::cerr << "Number of whitelisted tags returned " << res.num_rows() << std::endl;
-        	}
-        	else {
-			std::cerr << "Failed to get item list: " << query.error() << std::endl;
-            		//return 1;
-        	}
-
-        //return vi_tags;
-    	}
-    	else {
-		std::cerr << "DB connection failed: " << conn.error() << std::endl;
-        	//return 1; */
-    //	}
-	//return EXIT_SUCCESS;
-//}

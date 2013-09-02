@@ -27,7 +27,10 @@ void getSamples(const char *pcc_db, const char *pcc_server,
 {
 	std::cerr << "Hello from getSamples" << std::endl;
 	//Iterators
-	int i;
+	int i, j;
+	
+	int depthSum;
+	int depthAvg;
 
 	// Connect to the sample database.
 	mysqlpp::Connection conn(false);
@@ -40,6 +43,19 @@ void getSamples(const char *pcc_db, const char *pcc_server,
 				Sample sample;
 				sample.setName(sampleRes[i]["file"]);
 				sample.setID(sampleRes[i]["sample_id"]);
+				
+				//Retrieve the depth for every tag contained within the sample and calculate average
+				depthSum = 0;
+				mysqlpp::Query depthQuery = conn.query("SELECT depth FROM tag_index \
+						WHERE sample_id=%0:idval");
+				depthQuery.parse();
+				if (mysqlpp::StoreQueryResult depthRes = depthQuery.store(sampleRes[i]["sample_id"])) {
+						for (j = 0; j < depthRes.num_rows(); j++) {
+							depthSum = depthSum + depthRes[j]["depth"];
+						}
+						depthAvg = depthSum / (depthRes.num_rows());
+						sample.setAvgDepth(depthAvg);
+				}
 				pvSamples_samples->push_back(sample);
 			}
 		}

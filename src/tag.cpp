@@ -25,3 +25,27 @@ Tag::Tag()
 	coordinate = avgDepth = id = 0;
 	strand = "null";
 }
+
+void Tag::printTag()
+{
+	std::cerr << "Tag: << std::endl <<
+			"\tID: " << id << std::endl <<
+			"\tAvgDepth: " << avgDepth << std::endl <<
+			"\tName: " << name << std::endl <<
+			"\tFlag: " << flag << std::endl;
+}
+
+void Tag::setName(mysqlpp::String Str_name)
+{
+	name = std::string(Str_name.data(), Str_name.length());
+}
+
+void Tag::setID(int i_id)
+{
+	id = i_id;
+}
+
+void Tag::setAvgDepth(int i_avgdepth)
+{
+	avgDepth = i_avgdepth;
+}

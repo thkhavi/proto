@@ -30,5 +30,7 @@ class Tag {
 		int avgDepth;
 		int id;
 		std::string strand;
+		std::string chr;
+		std::string flag;
 };
 #endif   /* ----- #ifndef TAG_H_INC  ----- */

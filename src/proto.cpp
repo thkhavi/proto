@@ -112,12 +112,18 @@ int main ( int argc, char *argv[] )
 	//Populate the sample container with samples, and determine their average depth
 	getSamples(database, server, user, password, pvSamples_samples);
 
+	std::cerr << "finished getSamples from in proto" << std::endl;
 	for (i=0; i<vSamples_samples.size(); i++) {
 		vSamples_samples[i].printSample();
 	}
 
 	//Populate the tag container with tags, including depth information from the samples
 	getTags(database, server, user, password, pvSamples_samples, pvTag_tags);
+
+	std::cerr << "finished getTags from in proto" << std::endl;
+	for (i=0; i< 10 ;i++){
+		vTag_tags[i].printTag();
+	}
 
 	//Populate the site container with sites based on coordinately related tags with high sequencing depth
 	

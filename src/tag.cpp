@@ -61,3 +61,9 @@ void Tag::setAvgDepth(int i_avgdepth)
 {
 	avgDepth = i_avgdepth;
 }
+
+void Tag::setFlag(std::string Str_flag)
+{
+	flag = Str_flag;
+}
+

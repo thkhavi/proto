@@ -70,7 +70,7 @@ void getTags(const char *pcc_db, const char *pcc_server,
 {
 	std::cerr << "Hello from getTags" << std::endl;
 	//Iterators
-	int i, j, k=0;
+	int i, j, k, m;
 	
 	int depthSum = 0;
 	int depthAvg = 0;
@@ -92,6 +92,7 @@ void getTags(const char *pcc_db, const char *pcc_server,
 
 		if (mysqlpp::StoreQueryResult tagRes = tagQuery.store()) {
 			for (i = 0; i < tagRes.num_rows(); i++) {
+
 				Tag tag;
 				tag.setID(tagRes[i]["tag_id"]);
 				tag.setChr(tagRes[i]["chr"]);
@@ -105,22 +106,38 @@ void getTags(const char *pcc_db, const char *pcc_server,
 						WHERE catalog_id=%0:idval");
 				depthQuery.parse();
 				if (mysqlpp::StoreQueryResult depthRes = depthQuery.store(tagRes[i]["tag_id"])) {
-					for (j = 0; j < (*pvSamples_samples).size(); j++) {
+
+
+					for (j = 0; j < depthRes.num_rows(); j++) {
+					
 						Sample sample;
-						sample.setID(depthRes[0]["catalog_id"]);
-						if (sample.getID() == (*pvSamples_samples)[j].getID()){
-							if ((*pvSamples_samples)[j].getAvgDepth() >= avgDepthAllSamples) {
-								depthSum = depthSum + depthRes[j]["depth"];
-								k++;
+						sample.setID(depthRes[j]["sample_id"]);
+
+						for (k = 0; k < (*pvSamples_samples).size(); k++) {
+							if (sample.getID() == (*pvSamples_samples)[k].getID()){
+								if ((*pvSamples_samples)[k].getAvgDepth() >= avgDepthAllSamples) {
+									depthSum = depthSum + depthRes[j]["depth"];
+									m++;
+								}
+							
 							}
-							else {break;}
 						}
+						
+					
 					}
-					depthAvg = depthSum / k;
-					k=0;
-					tag.setAvgDepth(depthAvg);
+
+					if ( m == 0 ){
+						tag.setAvgDepth(0);
+						tag.setFlag("-");
+					}
+
+					if ( m > 0 ){
+						depthAvg = depthSum / m;
+						m=0;
+						tag.setAvgDepth(depthAvg);
+					}
 				}
-			pvTag_tags->push_back(tag);
+				pvTag_tags->push_back(tag);
 			}
 		}
 	}

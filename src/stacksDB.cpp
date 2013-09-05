@@ -81,7 +81,7 @@ void getTags(const char *pcc_db, const char *pcc_server,
 	for (i = 0; i < (*pvSamples_samples).length(); i++) {
 		depthSum = depthSum + (*pvSamples_samples)[i].avgDepth;
 	}
-	avgDepthAllSamples = depthSum / (*pvSamples_samples).length() ;
+	avgDepthAllSamples = depthSum / (*pvSamples_samples).size() ;
 	
 	
 	// Connect to the sample database.

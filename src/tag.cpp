@@ -24,20 +24,23 @@ Tag::Tag()
 {
 	coordinate = avgDepth = id = 0;
 	strand = "null";
+	chr = "null";
 }
 
 void Tag::printTag()
 {
 	std::cerr << "Tag: << std::endl <<
 			"\tID: " << id << std::endl <<
+			"\tChr: " << Chr << std::endl <<
+			"\tCoordinate: " << coordinate << std::endl <<
+			"\tStrand: " << strand << std::endl <<
 			"\tAvgDepth: " << avgDepth << std::endl <<
-			"\tName: " << name << std::endl <<
 			"\tFlag: " << flag << std::endl;
 }
 
-void Tag::setName(mysqlpp::String Str_name)
+void Tag::setChr(mysqlpp::String Str_chr)
 {
-	name = std::string(Str_name.data(), Str_name.length());
+	Chr = std::string(Str_chr.data(), Str_chr.length());
 }
 
 void Tag::setID(int i_id)

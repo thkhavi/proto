@@ -21,7 +21,6 @@
 #include <mysql++.h>
 #include "stacksDB.h"
 
-
 void getSamples(const char *pcc_db, const char *pcc_server,
 	       const char *pcc_user, const char *pcc_password, 
 	       std::vector<Sample> * pvSamples_samples)
@@ -67,7 +66,7 @@ void getSamples(const char *pcc_db, const char *pcc_server,
 void getTags(const char *pcc_db, const char *pcc_server,
 	       const char *pcc_user, const char *pcc_password, 
 	       std::vector<Sample> * pvSamples_samples,
-	       std::vector<Tags> * pvTags_tags)
+	       std::vector<Tag> * pvTag_tags)
 {
 	std::cerr << "Hello from getTags" << std::endl;
 	//Iterators
@@ -118,7 +117,7 @@ void getTags(const char *pcc_db, const char *pcc_server,
 					depthAvg = depthSum / (depthRes.num_rows());
 					sample.setAvgDepth(depthAvg);
 				}
-			pvTags_tags->push_back(tag);
+			pvTag_tags->push_back(tag);
 			}
 		}
 	}

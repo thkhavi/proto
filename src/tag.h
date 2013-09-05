@@ -18,6 +18,8 @@
 
 #ifndef  TAG_H_INC
 #define  TAG_H_INC
+#include  <mysql++.h>
+
 
 class Tag {
 	public:
@@ -25,12 +27,18 @@ class Tag {
 		Tag();
 		//Destructors
 		//~Tag();
+		void printTag();
+		void setID(int i_id);
+		void setChr(mysqlpp::String Str_chr);
+		void setCoordinate(int i_coordinate);
+		void setStrand(mysqlpp::String Str_strand);
+		void setAvgDepth(int i_avgdepth);
 	private:
 		int coordinate;
 		int avgDepth;
 		int id;
 		std::string strand;
-		std::string chr;
+		std::string Chr;
 		std::string flag;
 };
 #endif   /* ----- #ifndef TAG_H_INC  ----- */

@@ -22,9 +22,15 @@
 #include <vector>
 #include <mysql++.h>
 #include "sample.h"
+#include "tag.h"
 
 void getSamples(const char *pcc_db, const char *pcc_server,
 	       const char *pcc_user, const char *pcc_password, 
 	       std::vector<Sample> * pvSamples_samples);
+
+void getTags(const char *pcc_db, const char *pcc_server,
+	       const char *pcc_user, const char *pcc_password, 
+	       std::vector<Sample> * pvSamples_samples,
+	       std::vector<Tag> * pvTag_tags);
 
 #endif   /* ----- #ifndef STACKSDB_H_INC  ----- */

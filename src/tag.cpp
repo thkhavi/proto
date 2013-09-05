@@ -23,12 +23,12 @@
 Tag::Tag()
 {
 	coordinate = avgDepth = id = 0;
-	strand = chr = flag = "null";
+	strand = Chr = flag = "null";
 }
 
 void Tag::printTag()
 {
-	std::cerr << "Tag: << std::endl <<
+	std::cerr << "Tag: "<< std::endl <<
 			"\tID: " << id << std::endl <<
 			"\tChr: " << Chr << std::endl <<
 			"\tCoordinate: " << coordinate << std::endl <<

@@ -70,7 +70,7 @@ void getTags(const char *pcc_db, const char *pcc_server,
 {
 	std::cerr << "Hello from getTags" << std::endl;
 	//Iterators
-	int i, j, k, m;
+	int i, j, k, sample_count=0;
 	
 	int depthSum = 0;
 	int depthAvg = 0;
@@ -117,7 +117,7 @@ void getTags(const char *pcc_db, const char *pcc_server,
 							if (sample.getID() == (*pvSamples_samples)[k].getID()){
 								if ((*pvSamples_samples)[k].getAvgDepth() >= avgDepthAllSamples) {
 									depthSum = depthSum + depthRes[j]["depth"];
-									m++;
+									sample_count++;
 								}
 							
 							}
@@ -126,14 +126,14 @@ void getTags(const char *pcc_db, const char *pcc_server,
 					
 					}
 
-					if ( m == 0 ){
+					if ( sample_count == 0 ){
 						tag.setAvgDepth(0);
 						tag.setFlag("-");
 					}
 
-					if ( m > 0 ){
-						depthAvg = depthSum / m;
-						m=0;
+					if ( sample_count > 0 ){
+						depthAvg = depthSum / sample_count;
+						sample_count=0;
 						tag.setAvgDepth(depthAvg);
 					}
 				}

@@ -31,6 +31,9 @@ class Sample {
 		void setName(mysqlpp::String Str_name);
 		void setID(int i_id);
 		void setAvgDepth(int i_avgdepth);
+		int getID();
+		int getAvgDepth();
+
 	private:
 		int avgDepth;
 		int id;

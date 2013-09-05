@@ -119,7 +119,8 @@ int main ( int argc, char *argv[] )
 
 	
 	//Populate the tag container with tags, including depth information from the samples
-	
+	getTags(database, server, user, password, pvSamples_samples, pvSamples_samples, pvTag_tags);
+
 	//Populate the site container with sites based on coordinately related tags with high sequencing depth
 	
 	//Determine which sites a sample has present or absent

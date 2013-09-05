@@ -50,3 +50,13 @@ void Sample::setAvgDepth(int i_avgdepth)
 {
 	avgDepth = i_avgdepth;
 }
+
+int Sample::getID()
+{
+	return id;
+}
+
+int Sample::getAvgDepth()
+{
+	return avgDepth;
+}

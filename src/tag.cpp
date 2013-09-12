@@ -17,9 +17,12 @@
  */
 #include <stdlib.h>
 #include <string>
+#include <utility>
 #include "tag.h"
 
 //Constructors
+
+
 Tag::Tag()
 {
 	coordinate = avgDepth = id = 0;
@@ -67,3 +70,22 @@ void Tag::setFlag(std::string Str_flag)
 	flag = Str_flag;
 }
 
+int Tag::getAvgDepth()
+{
+	return avgDepth;
+}
+
+int Tag::getCoordinate()
+{
+	return coordinate;
+}
+
+std::string Tag::getStrand()
+{
+	return strand;
+}
+
+std::string Tag::getChr()
+{
+	return Chr;
+}

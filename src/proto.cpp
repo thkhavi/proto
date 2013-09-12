@@ -19,6 +19,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <vector>
+#include <map>
 #include "sample.h"
 #include "tag.h"
 #include "site.h"
@@ -121,11 +122,18 @@ int main ( int argc, char *argv[] )
 	getTags(database, server, user, password, pvSamples_samples, pvTag_tags);
 
 	std::cerr << "finished getTags from in proto" << std::endl;
-	for (i=0; i< 10 ;i++){
+	for (i=0; i< 5 ;i++){
 		vTag_tags[i].printTag();
 	}
-
 	//Populate the site container with sites based on coordinately related tags with high sequencing depth
+	getSites(database, server, user, password, pvTag_tags, pvSites_sites);
+
+	std::cerr << "finished getSites from in proto" << std::endl;
+	for (i=0; i< 5 ;i++){
+		(vSites_sites[i].getRev()).printTag();
+		(vSites_sites[i].getFwd()).printTag();
+	}
+
 	
 	//Determine which sites a sample has present or absent
 

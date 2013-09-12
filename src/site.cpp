@@ -27,3 +27,12 @@ Site::Site(Tag rev_tag, Tag fwd_tag)
 	site.first = rev_tag;
 	site.second = fwd_tag;
 }
+Tag Site::getRev()
+{
+	return site.first;
+}
+Tag Site::getFwd()
+{
+	return site.second;
+}
+

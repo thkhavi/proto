@@ -26,6 +26,8 @@ class Site{
 		Site(Tag rev_tag, Tag fwd_tag);
 		//Destructors
 		//~Site();
+		Tag getRev();
+		Tag getFwd();
 	private:
 		std::pair<Tag, Tag> site;
 };

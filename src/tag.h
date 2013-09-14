@@ -34,6 +34,7 @@ class Tag {
 		void setStrand(mysqlpp::String Str_strand);
 		void setAvgDepth(int i_avgdepth);
 		void setFlag(std::string Str_flag);
+		int getID();
 		int getCoordinate();
 		int getAvgDepth();
 		std::string getStrand();

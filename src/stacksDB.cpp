@@ -19,9 +19,14 @@
  
 #include <stdlib.h>
 #include <iostream>
+#include <iomanip>
+#include <locale>
+#include <sstream>
 #include <mysql++.h>
 #include "stacksDB.h"
 #include <map>
+#include <vector>
+#include <string>
 
  
 void getSamples(const char *pcc_db, const char *pcc_server,
@@ -95,7 +100,7 @@ void getTags(const char *pcc_db, const char *pcc_server,
 		//Execute the query for the samples, and process the return
 		mysqlpp::Query tagQuery = conn.query("SELECT tag_id, chr, bp, strand FROM catalog_tags");
 
-		if (mysqlpp::StoreQueryResult tagRes = tagQuery.store()) {
+	if (mysqlpp::StoreQueryResult tagRes = tagQuery.store()) {
 			for (i = 0; i < tagRes.num_rows(); i++) {
 
 				Tag tag;
@@ -183,15 +188,13 @@ void getSites(const char *pcc_db, const char *pcc_server,
 	//Define sites as positions with both forward and reverse tags that have average depth to tags
 	//For all tags
 	
-	typedef std::map<std::pair<int, std::string>, Tag> map_type_minus;
-	typedef std::map<std::pair<int, std::string>, Tag> map_type_plus;
+	typedef std::map<std::pair<int, std::string>, Tag> map_type;
 
-
-	for (i = 0; i < (*pvTag_tags).size()-1; i++) {
+	for (i = 0; i < (*pvTag_tags).size(); i++) {
 		//may need to be more lenient about depth of tags
 		if ((*pvTag_tags)[i].getStrand() == "-" && (*pvTag_tags)[i].getAvgDepth() >= avgDepthAllTags){
 			//find exact coordinate and chromosome pair
-			map_type_plus::iterator it = map_plus.find(make_pair(((*pvTag_tags)[i].getCoordinate()+6),(*pvTag_tags)[i].getChr()));
+			map_type::iterator it = map_plus.find(make_pair(((*pvTag_tags)[i].getCoordinate()+6),(*pvTag_tags)[i].getChr()));
 			if(it != map_plus.end()){
 				//may need to be more lenient about depth of tags
 				if( (it->second).getAvgDepth() >= avgDepthAllTags){
@@ -201,5 +204,93 @@ void getSites(const char *pcc_db, const char *pcc_server,
    			}
 		}
 	}
+}
+
+void querySamples(const char *pcc_db, const char *pcc_server,
+	       const char *pcc_user, const char *pcc_password,
+	       std::vector<Sample> * pvSamples_samples,
+	       std::vector<Site> * pvSite_sites)
+{
+	//iterators
+	int i, j;
+
+	//temporary ID holders
+
+	int i_tempRevID, i_tempFwdID;
+	//storage of querySamples
+	std::vector< std::string > vstr_Temp;
+	std::vector< std::vector<std::string> > vvstr_SampleStates;
+
+	//to convert int to string
+	int i_coordinate;		// number to be converted to a string
+	std::string str_coordinate;	// string which will contain the result
+
+
+	
+	
+	vstr_Temp.push_back("sample_name");
+	for (j = 0; j < (*pvSite_sites).size(); j++){
+		i_coordinate =((*pvSite_sites)[j].getRev()).getCoordinate();
+
+		//convert int i_coordinate to string str_coordinate
+		std::ostringstream convert; convert << i_coordinate; str_coordinate = convert.str(); 
+
+		vstr_Temp.push_back(str_coordinate);
+	}
+	vvstr_SampleStates.push_back(vstr_Temp);
+	vstr_Temp.clear();
+
+	mysqlpp::Connection conn(false);
+	if (conn.connect(pcc_db, pcc_server, pcc_user, pcc_password)) {
+
+	for (i = 0; i < (*pvSamples_samples).size(); i++){
+		
+		vstr_Temp.push_back((*pvSamples_samples)[i].getName());
+				
+		for (j=0; j < (*pvSite_sites).size(); j++){
+
+	
+			i_tempRevID = ((*pvSite_sites)[j].getRev()).getID();
+			i_tempFwdID = ((*pvSite_sites)[j].getFwd()).getID();
+
+			mysqlpp::Query depthQuery = conn.query("SELECT catalog_id FROM tag_index \
+							WHERE sample_id = %0:sampleid \
+							AND ( catalog_id = %1 OR catalog_id = %2 )");
+					depthQuery.parse();
+					if (mysqlpp::StoreQueryResult depthRes = 
+							depthQuery.store(
+								(*pvSamples_samples)[i].getID(),i_tempRevID,i_tempFwdID)){
+						// Both reverse and forward present, presence
+						if (depthRes.num_rows() == 2){
+							vstr_Temp.push_back("1");
+						}
+						// Either reverse or forward present, ambigious
+						else if (depthRes.num_rows() ==1){
+							vstr_Temp.push_back("-");
+						}
+						// Neither reverse of forward present, absence
+						else if (depthRes.num_rows() == 0){
+							vstr_Temp.push_back("0");
+						}
+						// Something unexpected happened, "WAT".
+						else {vstr_Temp.push_back("wat");}
+						
+					}
+					
+		}
+		vvstr_SampleStates.push_back(vstr_Temp);
+		vstr_Temp.clear();
+	}
+	}
+	for (i = 0; i < vvstr_SampleStates.size(); i++ ){
+        	for (j=0; j<vvstr_SampleStates[i].size(); j++){
+            		if(j==(vvstr_SampleStates[i].size()-1)){
+				std::cout << vvstr_SampleStates[i][j] << std::endl;
+            		}
+            		else{
+				std::cout << vvstr_SampleStates[i][j] << "\t";
+            		}
+        	}
+    	}	
 }
 

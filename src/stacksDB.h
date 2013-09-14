@@ -40,5 +40,10 @@ void getSites(const char *pcc_db, const char *pcc_server,
 	       std::vector<Tag> * pvTag_tags,
 	       std::vector<Site> * pvSite_sites);
 
+void querySamples(const char *pcc_db, const char *pcc_server,
+	       const char *pcc_user, const char *pcc_password, 
+	       std::vector<Sample> * pvSamples_samples,
+	       std::vector<Site> * pvSite_sites);
+
 
 #endif   /* ----- #ifndef STACKSDB_H_INC  ----- */

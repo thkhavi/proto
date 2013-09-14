@@ -125,6 +125,7 @@ int main ( int argc, char *argv[] )
 	for (i=0; i< 5 ;i++){
 		vTag_tags[i].printTag();
 	}
+
 	//Populate the site container with sites based on coordinately related tags with high sequencing depth
 	getSites(database, server, user, password, pvTag_tags, pvSites_sites);
 
@@ -136,6 +137,6 @@ int main ( int argc, char *argv[] )
 
 	
 	//Determine which sites a sample has present or absent
-
+	querySamples(database, server, user, password, pvSamples_samples, pvSites_sites);
 	return EXIT_SUCCESS;
 }

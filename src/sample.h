@@ -33,6 +33,7 @@ class Sample {
 		void setAvgDepth(int i_avgdepth);
 		int getID();
 		int getAvgDepth();
+		std::string getName();
 
 	private:
 		int avgDepth;

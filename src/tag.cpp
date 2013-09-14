@@ -70,6 +70,10 @@ void Tag::setFlag(std::string Str_flag)
 	flag = Str_flag;
 }
 
+int Tag::getID()
+{
+	return id;
+}
 int Tag::getAvgDepth()
 {
 	return avgDepth;

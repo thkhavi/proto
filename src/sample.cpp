@@ -55,8 +55,12 @@ int Sample::getID()
 {
 	return id;
 }
-
 int Sample::getAvgDepth()
 {
 	return avgDepth;
 }
+std::string Sample::getName()
+{
+	return name;
+}
+

@@ -138,5 +138,7 @@ int main ( int argc, char *argv[] )
 	
 	//Determine which sites a sample has present or absent
 	querySamples(database, server, user, password, pvSamples_samples, pvSites_sites);
+
+
 	return EXIT_SUCCESS;
 }

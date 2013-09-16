@@ -215,28 +215,34 @@ void querySamples(const char *pcc_db, const char *pcc_server,
 	int i, j;
 
 	//temporary ID holders
+	int i_coordinate, i_RevID, i_FwdID;
+	std::string str_chr, str_coordinate, str_RevID, str_FwdID;
 
-	int i_tempRevID, i_tempFwdID;
 	//storage of querySamples
 	std::vector< std::string > vstr_Temp;
 	std::vector< std::vector<std::string> > vvstr_SampleStates;
-
-	//to convert int to string
-	int i_coordinate;		// number to be converted to a string
-	std::string str_coordinate;	// string which will contain the result
-
-
-	
 	
 	vstr_Temp.push_back("sample_name");
 	for (j = 0; j < (*pvSite_sites).size(); j++){
+		
 		i_coordinate =((*pvSite_sites)[j].getRev()).getCoordinate();
+		std::ostringstream convert_coordinate;
+		convert_coordinate << i_coordinate; str_coordinate = convert_coordinate.str();
 
-		//convert int i_coordinate to string str_coordinate
-		std::ostringstream convert; convert << i_coordinate; str_coordinate = convert.str(); 
+		i_RevID = ((*pvSite_sites)[j].getRev()).getID();
+		std::ostringstream convert_RevID;
+		convert_RevID << i_RevID; str_RevID = convert_RevID.str();		
 
-		vstr_Temp.push_back(str_coordinate);
+		i_FwdID = ((*pvSite_sites)[j].getFwd()).getID();
+		std::ostringstream convert_FwdID;
+		convert_FwdID << i_FwdID; str_FwdID = convert_FwdID.str();
+		
+		str_chr = ((*pvSite_sites)[j].getRev()).getChr();
+
+		vstr_Temp.push_back(str_chr+"_"+str_coordinate + "_" + str_RevID +"_"+ str_FwdID);
+	
 	}
+
 	vvstr_SampleStates.push_back(vstr_Temp);
 	vstr_Temp.clear();
 
@@ -250,8 +256,8 @@ void querySamples(const char *pcc_db, const char *pcc_server,
 		for (j=0; j < (*pvSite_sites).size(); j++){
 
 	
-			i_tempRevID = ((*pvSite_sites)[j].getRev()).getID();
-			i_tempFwdID = ((*pvSite_sites)[j].getFwd()).getID();
+			i_RevID = ((*pvSite_sites)[j].getRev()).getID();
+			i_FwdID = ((*pvSite_sites)[j].getFwd()).getID();
 
 			mysqlpp::Query depthQuery = conn.query("SELECT catalog_id FROM tag_index \
 							WHERE sample_id = %0:sampleid \
@@ -259,7 +265,7 @@ void querySamples(const char *pcc_db, const char *pcc_server,
 					depthQuery.parse();
 					if (mysqlpp::StoreQueryResult depthRes = 
 							depthQuery.store(
-								(*pvSamples_samples)[i].getID(),i_tempRevID,i_tempFwdID)){
+								(*pvSamples_samples)[i].getID(),i_RevID,i_FwdID)){
 						// Both reverse and forward present, presence
 						if (depthRes.num_rows() == 2){
 							vstr_Temp.push_back("1");

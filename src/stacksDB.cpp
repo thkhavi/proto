@@ -56,10 +56,18 @@ void getSamples(const char *pcc_db, const char *pcc_server,
 				depthSum = 0;
 				mysqlpp::Query depthQuery = conn.query("SELECT depth FROM tag_index \
 						WHERE sample_id=%0:idval");
+					       //	AND (catalog_id = 1 OR catalog_id = 2\
+							OR catalog_id = 3 OR catalog_id = 4 OR catalog_id = 5\
+							OR catalog_id = 6 OR catalog_id = 7\
+							OR catalog_id = 8 OR catalog_id = 9 OR catalog_id = 10\
+							OR catalog_id = 11 OR catalog_id = 12\
+							OR catalog_id = 13 OR catalog_id =14 OR catalog_id = 15)");
 				depthQuery.parse();
+
 				if (mysqlpp::StoreQueryResult depthRes = depthQuery.store(sampleRes[i]["sample_id"])) {
 						for (j = 0; j < depthRes.num_rows(); j++) {
 							depthSum = depthSum + depthRes[j]["depth"];
+							
 						}
 						depthAvg = depthSum / (depthRes.num_rows());
 						sample.setAvgDepth(depthAvg);
@@ -99,8 +107,8 @@ void getTags(const char *pcc_db, const char *pcc_server,
 	if (conn.connect(pcc_db, pcc_server, pcc_user, pcc_password)) {
 		//Execute the query for the samples, and process the return
 		mysqlpp::Query tagQuery = conn.query("SELECT tag_id, chr, bp, strand FROM catalog_tags");
-
-	if (mysqlpp::StoreQueryResult tagRes = tagQuery.store()) {
+	
+		if (mysqlpp::StoreQueryResult tagRes = tagQuery.store()) {
 			for (i = 0; i < tagRes.num_rows(); i++) {
 
 				Tag tag;
@@ -116,7 +124,7 @@ void getTags(const char *pcc_db, const char *pcc_server,
 				depthSum = 0;
 				for (k = 0; k < pvSamples_samples->size(); k++) {
 					mysqlpp::Query depthQuery = conn.query("SELECT depth FROM tag_index \
-							WHERE catalog_id=%0:catid AND sample_id=%1:tagid");
+							WHERE catalog_id=%0:catid AND sample_id=%1:sampleid");
 					depthQuery.parse();
 					//For an unknown reason, using tagRes[i]["tag_id"] doesnt work directly in this query.store().
 					//Maybe the arguments have to be of the same type for query.store()?
@@ -125,7 +133,7 @@ void getTags(const char *pcc_db, const char *pcc_server,
 						//This should only return one row
 						for (j = 0; j < depthRes.num_rows(); j++) {
 							//We should do something less stringent here
-							if ((*pvSamples_samples)[k].getAvgDepth() >= avgDepthAllSamples) {
+							if ((*pvSamples_samples)[k].getAvgDepth() >= 0.25*avgDepthAllSamples) {
 								depthSum = depthSum + depthRes[j]["depth"];
 								sample_count++;
 							}
@@ -202,20 +210,27 @@ void getSites(const char *pcc_db, const char *pcc_server,
 					pvSite_sites->push_back(site);
 				}
    			}
+
 		}
 	}
 }
 
-void querySamples(const char *pcc_db, const char *pcc_server,
+void querySamplesSites(const char *pcc_db, const char *pcc_server,
 	       const char *pcc_user, const char *pcc_password,
 	       std::vector<Sample> * pvSamples_samples,
 	       std::vector<Site> * pvSite_sites)
 {
 	//iterators
-	int i, j;
+	int i, j, k;
+	
+	//counters for states:
+	int count_presence, count_ambiguous, count_absence, count_wat;
+	int count_ambiguous_fwd;
+	//avd depth of presence and ambiguous
+	int avgDepthPresence, avgDepthAmbiguous;
 
 	//temporary ID holders
-	int i_coordinate, i_RevID, i_FwdID;
+	int i_coordinate, i_RevID, i_FwdID, i_catID;
 	std::string str_chr, str_coordinate, str_RevID, str_FwdID;
 
 	//storage of querySamples
@@ -250,6 +265,10 @@ void querySamples(const char *pcc_db, const char *pcc_server,
 	if (conn.connect(pcc_db, pcc_server, pcc_user, pcc_password)) {
 
 	for (i = 0; i < (*pvSamples_samples).size(); i++){
+
+		count_presence=count_absence=count_ambiguous=count_wat=0;
+		avgDepthPresence=avgDepthAmbiguous=0;
+		count_ambiguous_fwd=0;
 		
 		vstr_Temp.push_back((*pvSamples_samples)[i].getName());
 				
@@ -259,7 +278,7 @@ void querySamples(const char *pcc_db, const char *pcc_server,
 			i_RevID = ((*pvSite_sites)[j].getRev()).getID();
 			i_FwdID = ((*pvSite_sites)[j].getFwd()).getID();
 
-			mysqlpp::Query depthQuery = conn.query("SELECT catalog_id FROM tag_index \
+			mysqlpp::Query depthQuery = conn.query("SELECT catalog_id, depth FROM tag_index \
 							WHERE sample_id = %0:sampleid \
 							AND ( catalog_id = %1 OR catalog_id = %2 )");
 					depthQuery.parse();
@@ -269,34 +288,161 @@ void querySamples(const char *pcc_db, const char *pcc_server,
 						// Both reverse and forward present, presence
 						if (depthRes.num_rows() == 2){
 							vstr_Temp.push_back("1");
+							for (k = 0; k < depthRes.num_rows(); k++){
+								avgDepthPresence = avgDepthPresence + depthRes[k]["depth"];
+							}
+							count_presence++;
 						}
 						// Either reverse or forward present, ambigious
 						else if (depthRes.num_rows() ==1){
-							vstr_Temp.push_back("-");
+							vstr_Temp.push_back("1");
+							for (k = 0; k < depthRes.num_rows(); k++){
+								avgDepthAmbiguous = avgDepthAmbiguous + depthRes[k]["depth"];
+								i_catID = depthRes[k]["catalog_id"];
+								if (i_catID == i_FwdID){
+									count_ambiguous_fwd++;
+								}
+							}
+							count_ambiguous++;
+
 						}
 						// Neither reverse of forward present, absence
 						else if (depthRes.num_rows() == 0){
 							vstr_Temp.push_back("0");
+							count_absence++;
+
 						}
 						// Something unexpected happened, "WAT".
-						else {vstr_Temp.push_back("wat");}
+						else {vstr_Temp.push_back("wat"); count_wat++;}
 						
 					}
 					
 		}
 		vvstr_SampleStates.push_back(vstr_Temp);
 		vstr_Temp.clear();
+		if (count_ambiguous != 0){avgDepthAmbiguous = avgDepthAmbiguous/count_ambiguous;}
+		avgDepthPresence = avgDepthPresence/(2*count_presence);
+		std::cerr << "For sample id " << (*pvSamples_samples)[i].getName() << std::endl;
+		std::cerr << "\t" << count_presence << " sites present" << std::endl;
+		std::cerr << "\t\t" << avgDepthPresence << " depth of sites present" << std::endl;
+		std::cerr << "\t" << count_absence << " sites absent" << std::endl;
+		std::cerr << "\t" << count_ambiguous << " sites ambigious" << std::endl;
+		std::cerr << "\t\t" << avgDepthAmbiguous << " depth of sites ambiguous" << std::endl;
+		std::cerr << "\t\t" << count_ambiguous_fwd << " fwd tags seen in ambiguous sites" << std::endl;
+		std::cerr << "\t" << count_wat <<" wats...uhoh, don't be sad!" << std::endl;
+		
+
+	}
+	}
+
+	for (i = 0; i < vvstr_SampleStates.size(); i++ ){
+        	for (j=0; j<vvstr_SampleStates[i].size(); j++){
+			std::cout << vvstr_SampleStates[i][j] << "\t";
+        	}
+		std::cout << std::endl;
+    	}
+
+}
+
+void querySamplesTags(const char *pcc_db, const char *pcc_server,
+	       const char *pcc_user, const char *pcc_password,
+	       std::vector<Sample> * pvSamples_samples,
+	       std::vector<Tag> * pvTag_tags)
+{
+	//iterators
+	int i, j, k;
+	
+	//counters for states:
+	int count_presence, count_absence, count_wat;
+
+	//temporary ID holders
+	int i_coordinate, i_tagID;
+	std::string str_chr, str_coordinate;
+
+	//storage of querySamples
+	std::vector< std::string > vstr_Temp;
+	std::vector< std::vector<std::string> > vvstr_SampleStates;
+	// to calculate average Tag depth
+	int depthSum = 0;
+	int avgDepthAllTags = 0;
+		
+	//Calculate average depth of all tags
+	for (i = 0; i < (*pvTag_tags).size(); i++) {
+		depthSum = depthSum + (*pvTag_tags)[i].getAvgDepth();
+	}
+	avgDepthAllTags = depthSum / pvTag_tags->size();
+
+	
+	vstr_Temp.push_back("sample_name");
+	for (j = 0; j < (*pvTag_tags).size(); j++){
+		// Tags must pass a certain depth threshold to be considered
+		if ( (*pvTag_tags)[j].getAvgDepth() >=0.5*avgDepthAllTags){
+		
+			i_coordinate =(*pvTag_tags)[j].getCoordinate();
+			std::ostringstream convert_coordinate;
+			convert_coordinate << i_coordinate; str_coordinate = convert_coordinate.str();
+
+			str_chr =(*pvTag_tags)[j].getChr();
+
+			vstr_Temp.push_back(str_chr+"_bp_"+str_coordinate);
+		}
+	
+	}
+	
+	std::cerr << "# of tags passed depth threshold: " << vstr_Temp.size()-1 <<std::endl;
+	vvstr_SampleStates.push_back(vstr_Temp);
+	vstr_Temp.clear();
+
+	mysqlpp::Connection conn(false);
+	if (conn.connect(pcc_db, pcc_server, pcc_user, pcc_password)) {
+
+	for (i = 0; i < (*pvSamples_samples).size(); i++){
+
+		count_presence=count_absence=count_wat=0;
+		
+		vstr_Temp.push_back((*pvSamples_samples)[i].getName());
+				
+		for (j=0; j < (*pvTag_tags).size(); j++){
+			// Tags must pass a certain depth threshold to be considered
+			if ( (*pvTag_tags)[j].getAvgDepth() >=0.5*avgDepthAllTags){
+
+				i_tagID = (*pvTag_tags)[j].getID();
+				mysqlpp::Query depthQuery = conn.query("SELECT catalog_id, depth FROM tag_index \
+							WHERE sample_id = %0:sampleid \
+							AND catalog_id = %1");
+				depthQuery.parse();
+				if (mysqlpp::StoreQueryResult depthRes = 
+						depthQuery.store((*pvSamples_samples)[i].getID(),i_tagID)){
+					// If tag is present, presence
+					if (depthRes.num_rows() == 1){
+						vstr_Temp.push_back("1");
+						count_presence++;
+					}
+					// If tag is absent, absence
+					else if (depthRes.num_rows() == 0){
+						vstr_Temp.push_back("0");
+						count_absence++;
+					}
+					// Something unexpected happened, "WAT".
+					else {vstr_Temp.push_back("wat"); count_wat++;}
+						
+				}		
+			}
+		}
+		vvstr_SampleStates.push_back(vstr_Temp);
+		vstr_Temp.clear();
+		std::cerr << "For sample id " << (*pvSamples_samples)[i].getName() << std::endl;
+		std::cerr << "\t" << count_presence << " tags present" << std::endl;
+		std::cerr << "\t" << count_absence << " tags absent" << std::endl;
+		std::cerr << "\t" << count_wat <<" wats...uhoh, don't be sad!" << std::endl;
 	}
 	}
 	for (i = 0; i < vvstr_SampleStates.size(); i++ ){
         	for (j=0; j<vvstr_SampleStates[i].size(); j++){
-            		if(j==(vvstr_SampleStates[i].size()-1)){
-				std::cout << vvstr_SampleStates[i][j] << std::endl;
-            		}
-            		else{
 				std::cout << vvstr_SampleStates[i][j] << "\t";
-            		}
         	}
-    	}	
+		std::cout << std::endl;
+    	}
 }
+
 

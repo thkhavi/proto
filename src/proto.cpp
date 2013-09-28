@@ -122,23 +122,37 @@ int main ( int argc, char *argv[] )
 	getTags(database, server, user, password, pvSamples_samples, pvTag_tags);
 
 	std::cerr << "finished getTags from in proto" << std::endl;
-	for (i=0; i< 5 ;i++){
+	for (i=0; i< 2 ;i++){
 		vTag_tags[i].printTag();
 	}
 
 	//Populate the site container with sites based on coordinately related tags with high sequencing depth
 	getSites(database, server, user, password, pvTag_tags, pvSites_sites);
-
 	std::cerr << "finished getSites from in proto" << std::endl;
-	for (i=0; i< 5 ;i++){
-		(vSites_sites[i].getRev()).printTag();
-		(vSites_sites[i].getFwd()).printTag();
+
+	//Print out average depth of all tags that make up sites
+	for (i=0; i < vSites_sites.size() ; i++){
+		std::cout<<(vSites_sites[i].getRev()).getID() <<"\t"<<(vSites_sites[i].getRev()).getAvgDepth()<<std::endl;
+		std::cout<<(vSites_sites[i].getFwd()).getID() <<"\t"<<(vSites_sites[i].getFwd()).getAvgDepth()<<std::endl;
+		if ((vSites_sites[i].getRev()).getAvgDepth()>100){
+			std::cerr<<(vSites_sites[i].getRev()).getID() <<"\t"<<(vSites_sites[i].getRev()).getAvgDepth()<<std::endl;
+		}
+		if ((vSites_sites[i].getFwd()).getAvgDepth()>100){
+			std::cerr<<(vSites_sites[i].getFwd()).getID() <<"\t"<<(vSites_sites[i].getFwd()).getAvgDepth()<<std::endl;
+		}
+
 	}
+
+
+	std::cerr << vSites_sites.size() << " sites made." <<std::endl;
 
 	
 	//Determine which sites a sample has present or absent
-	querySamples(database, server, user, password, pvSamples_samples, pvSites_sites);
+	//querySamplesSites(database, server, user, password, pvSamples_samples, pvSites_sites);
+	//std::cerr << "finished querySamplesSites from in proto" << std::endl;
 
-
+	//Determine which tags a sample has present or absent
+	//querySamplesTags(database, server, user, password, pvSamples_samples, pvTag_tags);
+	//std::cerr << "finished querySamplesTags from in proto" << std::endl;
 	return EXIT_SUCCESS;
 }

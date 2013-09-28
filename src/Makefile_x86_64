@@ -5,11 +5,14 @@ EXECUTABLE := proto
 
 all: $(EXECUTABLE)
 
-proto: proto.o sample.o site.o tag.o
-	g++ proto.o sample.o site.o tag.o -o $(EXECUTABLE) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
+proto: proto.o sample.o site.o tag.o stacksDB.o
+	g++ proto.o sample.o site.o tag.o stacksDB.o -o $(EXECUTABLE) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
 
 proto.o: proto.cpp
 	g++ -c proto.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
+
+stacksDB.o: stacksDB.cpp
+	g++ -c stacksDB.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
 
 tag.o: tag.cpp
 	g++ -c tag.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)

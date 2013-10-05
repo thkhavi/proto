@@ -138,8 +138,8 @@ str_l5 = "leaf 5 (" + str(len(li_6X)) + ")"
 str_l6 = "leaf 6 (" + str(len(li_7X)) + ")"
 str_l8 = "leaf 8 (" + str(len(li_8X)) + ")"
 
-for i in range(len(li_tsv)):
-    print li_tsv[i]
+
+print '\n'.join(('\t'.join(str(i) for i in item[0:])) for item in li_tsv)
 
 plt.legend((p1, p2, p3, p4, p5, p6, p7, p8
             ), (str_seed, str_meso, str_root,

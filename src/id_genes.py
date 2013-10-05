@@ -30,7 +30,7 @@ if sys.argv[1] == "--help" or sys.argv[1] == "-h":
 try:
     # read in input.tsv
     input_li_tsv = [line.strip() for line in open(sys.argv[1])]
-    input_li_tsv = [element.split(',') for element in input_li_tsv]
+    input_li_tsv = [element.split('\t') for element in input_li_tsv]
     # read in gene.gff3
     gff3_li_tsv = [line.strip() for line in open(sys.argv[2])]
     gff3_li_tsv = [element.split('\t') for element in gff3_li_tsv]
@@ -47,13 +47,9 @@ except IOError:
 li_tsv_temp=[]
 li_tsv_filtered=[]
 for i in range(len(input_li_tsv)):
+    if i == 0:
+        continue # header
     for j in range(len(input_li_tsv[i])):
-        if j == 0:
-            li_tsv_temp.append(float((input_li_tsv[i][j].split("["))[1])) # chromosome
-            continue
-        if j == len(input_li_tsv[i])-1:
-            li_tsv_temp.append(float((input_li_tsv[i][j].split("]"))[0])) # last element
-            continue
         li_tsv_temp.append(float(input_li_tsv[i][j]))
     li_tsv_filtered.append(li_tsv_temp)
     li_tsv_temp=[]

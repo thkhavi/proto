@@ -131,6 +131,7 @@ int main ( int argc, char *argv[] )
 	std::cerr << "finished getSites from in proto" << std::endl;
 
 	//Print out average depth of all tags that make up sites
+	/*
 	for (i=0; i < vSites_sites.size() ; i++){
 		std::cout<<(vSites_sites[i].getRev()).getID() <<"\t"<<(vSites_sites[i].getRev()).getAvgDepth()<<std::endl;
 		std::cout<<(vSites_sites[i].getFwd()).getID() <<"\t"<<(vSites_sites[i].getFwd()).getAvgDepth()<<std::endl;
@@ -142,7 +143,7 @@ int main ( int argc, char *argv[] )
 		}
 
 	}
-
+*/
 
 	std::cerr << vSites_sites.size() << " sites made." <<std::endl;
 

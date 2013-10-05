@@ -55,8 +55,8 @@ void getSamples(const char *pcc_db, const char *pcc_server,
 				//Retrieve the depth for every tag contained within the sample and calculate average
 				depthSum = 0;
 				mysqlpp::Query depthQuery = conn.query("SELECT depth FROM tag_index \
-						WHERE sample_id=%0:idval");
-					       //	AND (catalog_id = 1 OR catalog_id = 2\
+						WHERE sample_id=%0:idval\
+					       		AND (catalog_id = 1 OR catalog_id = 2\
 							OR catalog_id = 3 OR catalog_id = 4 OR catalog_id = 5\
 							OR catalog_id = 6 OR catalog_id = 7\
 							OR catalog_id = 8 OR catalog_id = 9 OR catalog_id = 10\
@@ -88,7 +88,8 @@ void getTags(const char *pcc_db, const char *pcc_server,
 	//Temporary holder to convert a mysqlpp::string to int.
 	int tmpTagID;
 	//Iterators
-	int i, j, k, sample_count=0;
+	int i, j, k, sample_count=0, count_sample_0=0;
+
 	
 	int depthSum = 0;
 	int depthAvg = 0;
@@ -106,7 +107,7 @@ void getTags(const char *pcc_db, const char *pcc_server,
 	mysqlpp::Connection conn(false);
 	if (conn.connect(pcc_db, pcc_server, pcc_user, pcc_password)) {
 		//Execute the query for the samples, and process the return
-		mysqlpp::Query tagQuery = conn.query("SELECT tag_id, chr, bp, strand FROM catalog_tags");
+		mysqlpp::Query tagQuery = conn.query("SELECT tag_id, chr, bp, strand FROM catalog_tags LIMIT 15");
 	
 		if (mysqlpp::StoreQueryResult tagRes = tagQuery.store()) {
 			for (i = 0; i < tagRes.num_rows(); i++) {
@@ -133,28 +134,29 @@ void getTags(const char *pcc_db, const char *pcc_server,
 						//This should only return one row
 						for (j = 0; j < depthRes.num_rows(); j++) {
 							//We should do something less stringent here
-							if ((*pvSamples_samples)[k].getAvgDepth() >= 0.25*avgDepthAllSamples) {
+							//if ((*pvSamples_samples)[k].getAvgDepth() >= avgDepthAllSamples) {
 								depthSum = depthSum + depthRes[j]["depth"];
 								sample_count++;
-							}
+							//}
 						}
 					}
 				}
-				if ( sample_count == 0 ){
-					tag.setAvgDepth(0);
-					tag.setFlag("-");
+				if ( sample_count == 0){
+					count_sample_0++;
 				}
 
 				if ( sample_count > 0 ){
 					depthAvg = depthSum / sample_count;
 					sample_count=0;
 					tag.setAvgDepth(depthAvg);
+					pvTag_tags->push_back(tag);
 				}
 				
-				pvTag_tags->push_back(tag);
+				
 			}
 		}
 	}
+	std::cerr <<"\t\t****Tags that have sample count == 0: "<<count_sample_0<<std::endl; 
 }
 
 void getSites(const char *pcc_db, const char *pcc_server,
@@ -190,6 +192,9 @@ void getSites(const char *pcc_db, const char *pcc_server,
 
 	}
 	avgDepthAllTags = depthSum / pvTag_tags->size() ;
+
+	std::cerr << "\tSum of all tag depth: " << depthSum << std::endl;
+	std::cerr << "\t# of tags: " << pvTag_tags->size() << std::endl;
 
 	std::cerr << "\tCalculated average depth across all tags: " << avgDepthAllTags << std::endl;
 	

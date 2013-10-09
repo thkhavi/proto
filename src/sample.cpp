@@ -23,7 +23,8 @@
 
 Sample::Sample()
 {
-	avgDepth = id = 0;
+	avgDepth = 0.0;
+       	id = 0;
 	name = flag = "null";
 }
 
@@ -46,16 +47,16 @@ void Sample::setID(int i_id)
 	id = i_id;
 }
 
-void Sample::setAvgDepth(int i_avgdepth)
+void Sample::setAvgDepth(float f_avgdepth)
 {
-	avgDepth = i_avgdepth;
+	avgDepth = f_avgdepth;
 }
 
 int Sample::getID()
 {
 	return id;
 }
-int Sample::getAvgDepth()
+float Sample::getAvgDepth()
 {
 	return avgDepth;
 }

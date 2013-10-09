@@ -25,7 +25,8 @@
 
 Tag::Tag()
 {
-	coordinate = avgDepth = id = 0;
+	avgDepth = 0.0;
+	coordinate = id = 0;
 	strand = Chr = flag = "null";
 }
 
@@ -60,9 +61,9 @@ void Tag::setStrand(mysqlpp::String Str_strand)
 	strand = std::string(Str_strand.data(), Str_strand.length());
 }
 
-void Tag::setAvgDepth(int i_avgdepth)
+void Tag::setAvgDepth(float f_avgdepth)
 {
-	avgDepth = i_avgdepth;
+	avgDepth = f_avgdepth;
 }
 
 void Tag::setFlag(std::string Str_flag)
@@ -74,7 +75,7 @@ int Tag::getID()
 {
 	return id;
 }
-int Tag::getAvgDepth()
+float Tag::getAvgDepth()
 {
 	return avgDepth;
 }

@@ -30,13 +30,13 @@ class Sample {
 		void printSample();
 		void setName(mysqlpp::String Str_name);
 		void setID(int i_id);
-		void setAvgDepth(int i_avgdepth);
+		void setAvgDepth(float f_avgdepth);
 		int getID();
-		int getAvgDepth();
+		float getAvgDepth();
 		std::string getName();
 
 	private:
-		int avgDepth;
+		float avgDepth;
 		int id;
 		std::string name;
 		std::string flag;

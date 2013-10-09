@@ -32,16 +32,16 @@ class Tag {
 		void setChr(mysqlpp::String Str_chr);
 		void setCoordinate(int i_coordinate);
 		void setStrand(mysqlpp::String Str_strand);
-		void setAvgDepth(int i_avgdepth);
+		void setAvgDepth(float f_avgdepth);
 		void setFlag(std::string Str_flag);
 		int getID();
 		int getCoordinate();
-		int getAvgDepth();
+		float getAvgDepth();
 		std::string getStrand();
 		std::string getChr();
 	private:
 		int coordinate;
-		int avgDepth;
+		float avgDepth;
 		int id;
 		std::string strand;
 		std::string Chr;

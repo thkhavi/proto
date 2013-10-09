@@ -37,8 +37,8 @@ void getSamples(const char *pcc_db, const char *pcc_server,
 	//Iterators
 	int i, j;
 	
-	int depthSum;
-	int depthAvg;
+	float depthSum;
+	float depthAvg;
 
 	// Connect to the sample database.
 	mysqlpp::Connection conn(false);
@@ -91,10 +91,10 @@ void getTags(const char *pcc_db, const char *pcc_server,
 	int i, j, k, sample_count=0, count_sample_0=0;
 
 	
-	int depthSum = 0;
-	int depthAvg = 0;
+	float depthSum = 0;
+	float depthAvg = 0;
 
-	int avgDepthAllSamples = 0;
+	float avgDepthAllSamples = 0;
 
 	//Calculate average depth of all samples
 	for (i = 0; i < (*pvSamples_samples).size(); i++) {
@@ -168,8 +168,8 @@ void getSites(const char *pcc_db, const char *pcc_server,
 	//Iterators
 	int i;
 
-	int depthSum = 0;
-	int avgDepthAllTags = 0;
+	float depthSum = 0;
+	float avgDepthAllTags = 0;
 	
 	//Define maps with key(coordinate,chr) value(tag)
 	std::map< std::pair< int, std::string> , Tag> map_minus;
@@ -232,7 +232,7 @@ void querySamplesSites(const char *pcc_db, const char *pcc_server,
 	int count_presence, count_ambiguous, count_absence, count_wat;
 	int count_ambiguous_fwd;
 	//avd depth of presence and ambiguous
-	int avgDepthPresence, avgDepthAmbiguous;
+	float avgDepthPresence, avgDepthAmbiguous;
 
 	//temporary ID holders
 	int i_coordinate, i_RevID, i_FwdID, i_catID;
@@ -368,8 +368,8 @@ void querySamplesTags(const char *pcc_db, const char *pcc_server,
 	std::vector< std::string > vstr_Temp;
 	std::vector< std::vector<std::string> > vvstr_SampleStates;
 	// to calculate average Tag depth
-	int depthSum = 0;
-	int avgDepthAllTags = 0;
+	float depthSum = 0;
+	float avgDepthAllTags = 0;
 		
 	//Calculate average depth of all tags
 	for (i = 0; i < (*pvTag_tags).size(); i++) {

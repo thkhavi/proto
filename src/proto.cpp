@@ -149,8 +149,8 @@ int main ( int argc, char *argv[] )
 
 	
 	//Determine which sites a sample has present or absent
-	//querySamplesSites(database, server, user, password, pvSamples_samples, pvSites_sites);
-	//std::cerr << "finished querySamplesSites from in proto" << std::endl;
+	querySamplesSites(database, server, user, password, pvSamples_samples, pvSites_sites);
+	std::cerr << "finished querySamplesSites from in proto" << std::endl;
 
 	//Determine which tags a sample has present or absent
 	//querySamplesTags(database, server, user, password, pvSamples_samples, pvTag_tags);

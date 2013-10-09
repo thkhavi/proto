@@ -36,9 +36,6 @@ void getSamples(const char *pcc_db, const char *pcc_server,
 	std::cerr << "Hello from getSamples" << std::endl;
 	//Iterators
 	int i, j;
-	
-	float depthSum;
-	float depthAvg;
 
 	// Connect to the sample database.
 	mysqlpp::Connection conn(false);
@@ -53,24 +50,13 @@ void getSamples(const char *pcc_db, const char *pcc_server,
 				sample.setID(sampleRes[i]["sample_id"]);
 				
 				//Retrieve the depth for every tag contained within the sample and calculate average
-				depthSum = 0;
-				mysqlpp::Query depthQuery = conn.query("SELECT depth FROM tag_index \
+				mysqlpp::Query depthQuery = conn.query("SELECT AVG(depth) avg FROM tag_index \
 						WHERE sample_id=%0:idval\
-					       		AND (catalog_id = 1 OR catalog_id = 2\
-							OR catalog_id = 3 OR catalog_id = 4 OR catalog_id = 5\
-							OR catalog_id = 6 OR catalog_id = 7\
-							OR catalog_id = 8 OR catalog_id = 9 OR catalog_id = 10\
-							OR catalog_id = 11 OR catalog_id = 12\
-							OR catalog_id = 13 OR catalog_id =14 OR catalog_id = 15)");
+					       		AND (catalog_id >= 1 AND catalog_id <=15)");
 				depthQuery.parse();
 
 				if (mysqlpp::StoreQueryResult depthRes = depthQuery.store(sampleRes[i]["sample_id"])) {
-						for (j = 0; j < depthRes.num_rows(); j++) {
-							depthSum = depthSum + depthRes[j]["depth"];
-							
-						}
-						depthAvg = depthSum / (depthRes.num_rows());
-						sample.setAvgDepth(depthAvg);
+					sample.setAvgDepth(depthRes[0]["avg"]);
 				}
 				pvSamples_samples->push_back(sample);
 			}
@@ -88,12 +74,9 @@ void getTags(const char *pcc_db, const char *pcc_server,
 	//Temporary holder to convert a mysqlpp::string to int.
 	int tmpTagID;
 	//Iterators
-	int i, j, k, sample_count=0, count_sample_0=0;
+	int i;
 
-	
 	float depthSum = 0;
-	float depthAvg = 0;
-
 	float avgDepthAllSamples = 0;
 
 	//Calculate average depth of all samples
@@ -113,50 +96,25 @@ void getTags(const char *pcc_db, const char *pcc_server,
 			for (i = 0; i < tagRes.num_rows(); i++) {
 
 				Tag tag;
-
 				tag.setID(tagRes[i]["tag_id"]);
 				tag.setChr(tagRes[i]["chr"]);
 				tag.setCoordinate(tagRes[i]["bp"]);
 				tag.setStrand(tagRes[i]["strand"]);
-
-							
-				//Retrieve the depth for every tag for all samples that are greater than or
-				//equal to the average sample depth and calculate tag average depth
-				depthSum = 0;
-				for (k = 0; k < pvSamples_samples->size(); k++) {
-					mysqlpp::Query depthQuery = conn.query("SELECT depth FROM tag_index \
-							WHERE catalog_id=%0:catid AND sample_id=%1:sampleid");
-					depthQuery.parse();
-					//For an unknown reason, using tagRes[i]["tag_id"] doesnt work directly in this query.store().
-					//Maybe the arguments have to be of the same type for query.store()?
-					tmpTagID = tagRes[i]["tag_id"];
-					if (mysqlpp::StoreQueryResult depthRes = depthQuery.store(tmpTagID, (*pvSamples_samples)[k].getID())) {
-						//This should only return one row
-						for (j = 0; j < depthRes.num_rows(); j++) {
-							//We should do something less stringent here
-							//if ((*pvSamples_samples)[k].getAvgDepth() >= avgDepthAllSamples) {
-								depthSum = depthSum + depthRes[j]["depth"];
-								sample_count++;
-							//}
-						}
-					}
+			
+				//Retrieve the depth for every tag
+				mysqlpp::Query depthQuery = conn.query("SELECT AVG(depth) avg FROM tag_index \
+									WHERE catalog_id=%0:catid");
+				depthQuery.parse();
+				//For an unknown reason, using tagRes[i]["tag_id"] doesnt work directly in this query.store().
+				//Maybe the arguments have to be of the same type for query.store()?
+				tmpTagID = tagRes[i]["tag_id"];
+				if (mysqlpp::StoreQueryResult depthRes = depthQuery.store(tmpTagID)){
+					tag.setAvgDepth(depthRes[0]["avg"]);
 				}
-				if ( sample_count == 0){
-					count_sample_0++;
-				}
-
-				if ( sample_count > 0 ){
-					depthAvg = depthSum / sample_count;
-					sample_count=0;
-					tag.setAvgDepth(depthAvg);
-					pvTag_tags->push_back(tag);
-				}
-				
-				
-			}
+				pvTag_tags->push_back(tag);
+			}	
 		}
 	}
-	std::cerr <<"\t\t****Tags that have sample count == 0: "<<count_sample_0<<std::endl; 
 }
 
 void getSites(const char *pcc_db, const char *pcc_server,
